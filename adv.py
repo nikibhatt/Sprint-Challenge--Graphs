@@ -32,8 +32,6 @@ traversal_path = []
 #My code starts here
 
 def dft_recursive(current_room, visited=None):
-    explored = False
-    print(visited)
 
     if visited is None:
         visited = {}
@@ -44,30 +42,22 @@ def dft_recursive(current_room, visited=None):
         for exit in exits:
             visited[current_room.id][exit] = '?'
 
-    for k,v in visited[current_room.id].items():
-        if v == '?':
-            go_to_room = player.current_room.get_room_in_direction(k)
-            if go_to_room is not None:
-                visited[current_room.id][k] = player.current_room.get_room_in_direction(k).id
-                traversal_path.append(k)
-                player.travel(k)
-                explored = True
-                dft_recursive(go_to_room, visited)
+    for exit in player.current_room.get_exits():
+        path = [exit]
+        go_to_room = player.current_room.get_room_in_direction(exit)
+        if go_to_room.id not in visited:
+            new_path = dft_recursive(go_to_room, visited)
+            if exit == 'n':
+                opp_of_exit = 's'
+            elif exit == 's':
+                opp_of_exit = 'n'
+            elif exit == 'w':
+                opp_of_exit = 'e'
+            elif exit == 'e':
+                opp_of_exit = 'w'
+            path = path + new_path + [opp_of_exit]
 
-    if explored == False:
-        last_move = traversal_path[-1]
-        if last_move == 'n':
-            back_move = 's'
-        elif last_move == 's':
-            back_move = 'n'
-        elif last_move == 'e':
-            back_move = 'w'
-        elif last_move == 'w':
-            back_move = 'e'
-        player.travel(back_move)
-        del traversal_path[-1]
-
-    return
+    return path
 
 dft_recursive(player.current_room)
 
