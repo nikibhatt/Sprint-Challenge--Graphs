@@ -13,8 +13,8 @@ world = World()
 # You may uncomment the smaller graphs for development and testing purposes.
 #map_file = "maps/test_line.txt"
 map_file = "maps/test_cross.txt"
-#map_file = "maps/test_loop.txt"
-#map_file = "maps/test_loop_fork.txt"
+# map_file = "maps/test_loop.txt"
+# map_file = "maps/test_loop_fork.txt"
 #map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
@@ -31,30 +31,28 @@ player = Player(world.starting_room)
 traversal_path = []
 #My code starts here
 
-def dft_recursive(current_room, visited=None):
-    explored = False
-    print(visited)
+visited = {}#dictionary to keep track of rooms visited+ direction explored
+rooms_completed = 0
 
-    if visited is None:
-        visited = {}
 
-    if current_room.id not in visited:
-        visited[current_room.id] = {}
-        exits = player.current_room.get_exits()
+while rooms_completed < len(world.room_grid):
+    moved = False
+    exits = player.current_room.get_exits()
+    room_id = player.current_room.id
+    #initialize
+    if room_id not in visited:
+        visited[room_id] = {}
         for exit in exits:
-            visited[current_room.id][exit] = '?'
+            visited[room_id][exit] = '?'
 
-    for k,v in visited[current_room.id].items():
+    for k, v in visited[room_id].items():
         if v == '?':
-            go_to_room = player.current_room.get_room_in_direction(k)
-            if go_to_room is not None:
-                visited[current_room.id][k] = player.current_room.get_room_in_direction(k).id
-                traversal_path.append(k)
-                player.travel(k)
-                explored = True
-                dft_recursive(go_to_room, visited)
-
-    if explored == False:
+            visited[room_id][k] = player.current_room.get_room_in_direction(k).id
+            traversal_path.append(k)
+            player.travel(k)
+            moved = True
+            break
+    if moved == False:
         last_move = traversal_path[-1]
         if last_move == 'n':
             back_move = 's'
@@ -66,12 +64,11 @@ def dft_recursive(current_room, visited=None):
             back_move = 'e'
         player.travel(back_move)
         del traversal_path[-1]
+        rooms_completed += 1
 
-    return
 
-dft_recursive(player.current_room)
-
-print(f"Traversal_path: {traversal_path}")
+print(f"visited: {visited}")
+print(f"traversal_path: {traversal_path}")
 
 #My code ends here
 
