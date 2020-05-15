@@ -56,7 +56,8 @@ def dft_recursive(current_room, visited=None):
             elif exit == 'e':
                 opp_of_exit = 'w'
             path = path + new_path + [opp_of_exit]
-
+        else:
+            return []
     return path
 
 dft_recursive(player.current_room)
