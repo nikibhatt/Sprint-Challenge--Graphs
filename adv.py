@@ -38,13 +38,13 @@ def dft_recursive(current_room, visited=None):
 
     if current_room.id not in visited:
         visited[current_room.id] = {}
-        exits = player.current_room.get_exits()
+        exits = current_room.get_exits()
         for exit in exits:
             visited[current_room.id][exit] = '?'
 
-    for exit in player.current_room.get_exits():
+    for exit in current_room.get_exits():
         path = [exit]
-        go_to_room = player.current_room.get_room_in_direction(exit)
+        go_to_room = current_room.get_room_in_direction(exit)
         if go_to_room.id not in visited:
             new_path = dft_recursive(go_to_room, visited)
             if exit == 'n':
