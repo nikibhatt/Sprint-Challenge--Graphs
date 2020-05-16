@@ -12,10 +12,10 @@ world = World()
 
 # You may uncomment the smaller graphs for development and testing purposes.
 #map_file = "maps/test_line.txt"
-map_file = "maps/test_cross.txt"
+#map_file = "maps/test_cross.txt"
 #map_file = "maps/test_loop.txt"
 #map_file = "maps/test_loop_fork.txt"
-#map_file = "maps/main_maze.txt"
+map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph=literal_eval(open(map_file, "r").read())
@@ -33,6 +33,7 @@ traversal_path = []
 
 def dft_recursive(current_room, visited=None):
 
+    path = []
     if visited is None:
         visited = {}
 
@@ -43,7 +44,7 @@ def dft_recursive(current_room, visited=None):
             visited[current_room.id][exit] = '?'
 
     for exit in current_room.get_exits():
-        path = [exit]
+
         go_to_room = current_room.get_room_in_direction(exit)
         if go_to_room.id not in visited:
             new_path = dft_recursive(go_to_room, visited)
@@ -55,12 +56,11 @@ def dft_recursive(current_room, visited=None):
                 opp_of_exit = 'e'
             elif exit == 'e':
                 opp_of_exit = 'w'
-            path = path + new_path + [opp_of_exit]
-        else:
-            return []
+            path += [exit] + new_path + [opp_of_exit]
+
     return path
 
-dft_recursive(player.current_room)
+traversal_path = dft_recursive(player.current_room)
 
 print(f"Traversal_path: {traversal_path}")
 
